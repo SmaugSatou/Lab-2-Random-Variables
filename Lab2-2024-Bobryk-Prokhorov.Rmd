@@ -1,10 +1,32 @@
 ---
 title: 'P&S-2022: Lab assignment 2'
-author: "Name1, Name2, Name3"
+author: "Vladyslav Bobryk, Roman Prokhorov"
 output:
   html_document:
     df_print: paged
 ---
+
+## Introduction
+
+### Team Information
+
+**Team ID:** 31
+
+```{r}
+id <- 31
+set.seed(31)
+```
+
+### Work Distribution
+
+-   **Vladyslav Bobryk**:
+    -   Task 2: Poisson distribution and radioactive decay
+    -   Task 3: Central Limit Theorem for exponential distribution
+    -   Contribution: \~50%
+-   **Roman Prokhorov**:
+    -   Task 1: Hamming code implementation and analysis
+    -   Task 4: Independence and moments of random variables
+    -   Contribution: \~50%
 
 ## General comments and instructions
 
@@ -35,15 +57,15 @@ output:
 
 #### The **generator** matrix $G$ and the **parity-check** matrix $H$ are given by
 
-$$  
-    G := 
+$$
+    G :=
     \begin{pmatrix}
         1 & 1 & 1 & 0 & 0 & 0 & 0 \\
         1 & 0 & 0 & 1 & 1 & 0 & 0 \\
         0 & 1 & 0 & 1 & 0 & 1 & 0 \\
         1 & 1 & 0 & 1 & 0 & 0 & 1 \\
     \end{pmatrix},
- \qquad 
+ \qquad
     H^\top := \begin{pmatrix}
         1 & 0 & 1 & 0 & 1 & 0 & 1 \\
         0 & 1 & 1 & 0 & 0 & 1 & 1 \\
@@ -63,11 +85,6 @@ $$
 #### First, we set the **id** of the team and define the probability $p$ and the generator and parity-check matrices $G$ and $H$
 
 ```{r}
-# your team id number 
-                          ###
-id <- 50                  ### Change to the correct id!
-                          ###
-set.seed(id)
 p <- id/100
 # matrices G and H
 G <- matrix(c(1, 1, 1, 0, 0, 0, 0,
@@ -77,9 +94,9 @@ G <- matrix(c(1, 1, 1, 0, 0, 0, 0,
 H <- t(matrix(c(1, 0, 1, 0, 1, 0, 1,
 		0, 1, 1, 0, 0, 1, 1,
 		0, 0, 0, 1, 1, 1, 1), nrow = 3, byrow = TRUE))
-# cat("The matrix G is: \n") 
-#G  
-#cat("The matrix H is: \n") 
+# cat("The matrix G is: \n")
+#G
+#cat("The matrix H is: \n")
 #H
 #cat("The product GH must be zero: \n")
 #(G%*%H) %%2
@@ -92,7 +109,7 @@ H <- t(matrix(c(1, 0, 1, 0, 1, 0, 1,
 
 message_generator <- function(N) {
   matrix(sample(c(0,1), 4*N, replace = TRUE), nrow = N)
-}  
+}
 messages <- message_generator(100)
 codewords <- (messages %*% G) %% 2
 ```
@@ -101,7 +118,7 @@ codewords <- (messages %*% G) %% 2
 
 ```{r}
 #  errors <- ...
-#  received <-   
+#  received <-
 ```
 
 The next steps include detecting the errors in the received messages, correcting them, and then decoding the obtained messages. After this, you can continue with calculating all the quantities of interest
@@ -152,8 +169,8 @@ sigma <- 1    # change this!
 ```{r}
 xlims <- c(mu-3*sigma,mu+3*sigma)
 Fs <- ecdf(sample_means)
-plot(Fs, 
-     xlim = xlims, 
+plot(Fs,
+     xlim = xlims,
      ylim = c(0,1),
      col = "blue",
      lwd = 2,
@@ -207,8 +224,8 @@ sigma <- 1    # change this!
 ```{r}
 xlims <- c(mu-3*sigma,mu+3*sigma)
 Fs <- ecdf(sample_means)
-plot(Fs, 
-     xlim = xlims, 
+plot(Fs,
+     xlim = xlims,
      col = "blue",
      lwd = 2,
      main = "Comparison of ecdf and cdf")
@@ -225,55 +242,161 @@ curve(pnorm(x, mean = mu, sd = sigma), col = "red", lwd = 2, add = TRUE)
 
 **This task consists of two parts:**
 
-1.  **In this part, we discuss independence of random variables and its moments: expectation and variance.**
+**1.  In this part, we discuss independence of random variables and its moments: expectation and variance.**
 
-    1.  Suppose we have a random variable $X$. Explain why $\mathbb{E}(\frac{1}{X}) \neq \frac{1}{\mathbb{E(X)}}$;
+1.1 Suppose we have a random variable $X$. Explain why $\mathbb{E}(\frac{1}{X}) \neq \frac{1}{\mathbb{E(X)}}$;
 
-    2.  Let $X \sim \mathscr{N}(\mu,\sigma^2)$ with $\mu = teamidnumber$ and $\sigma^{2} = 2\times teamidnumber+7$. Simulate realizations $x_1,x_2,\dots,x_{100}$ of $X$ and $y_1,y_2,\dots,y_{100}$ of $Y := \frac{1}{X}$ to calculate the values of $\frac{1}{\overline{\textbf{X}}}$ and $\overline{\textbf{Y}}$. Comment on the received results;
+**Explanation:** The expectation operator $\mathbb{E}$ is linear, but not multiplicative for non-linear transformations. The function $f(x) = \frac{1}{x}$ is non-linear and convex (for positive $x$), so by Jensen's inequality: $\mathbb{E}(f(X)) \geq f(\mathbb{E}(X))$.
 
-        ```{r}
-        mu <- 0 #change this!
-        sigma <- 1 #change this
-        N <- 100
+1.2 Let $X \sim \mathscr{N}(\mu,\sigma^2)$ with $\mu = teamidnumber$ and $\sigma^{2} = 2\times teamidnumber+7$. Simulate realizations $x_1,x_2,\dots,x_{100}$ of $X$ and $y_1,y_2,\dots,y_{100}$ of $Y := \frac{1}{X}$ to calculate the values of $\frac{1}{\overline{\textbf{X}}}$ and $\overline{\textbf{Y}}$. Comment on the received results;
 
-        # YOUR CODE HERE
-        ```
+```{r}
+# Set parameters
+mu <- id
+sigma <- sqrt(id * 2 + 7)
+N <- 100
 
-    3.  Let $X$ and $Y$ be exponentially distributed r.v.'s with parameter $\lambda = 2$. Set $Z := \log{X} + 5$. Plot the Quantile-Quantile plot and scatterplot of $X$ and $Y$. Plot the Quantile-Quantile plot and scatterplot of $X$ and $Z$. Explain the results. Comment on the difference of relations between the pairs of random variables. Which pair of r.v.'s is dependent and which one is similar?
+# Generate random variables
+X <- rnorm(N, mean = mu, sd = sigma)
+Y <- 1 / X
 
-        ```{r}
-        # YOUR CODE HERE
-        ```
+# Calculate values
+value1 = 1 / mean(X)
+value2 = mean(Y)
 
-    ------------------------------------------------------------------------
+value1
+value2
+```
 
-2.  You toss a fair coin three times and a random variable $X$ records how many times the coin shows Heads. You convince your friend that they should play a game with the following payoff: every round (equivalent to three coin tosses) will cost £$1$. They will receive £$0.5$ for every coin showing Heads. What is the expected value and the variance of the random variable $Y := 0.5X-1$?
+**Comment:** The simulation shows that the two values are different, confirming what we explained above. We see that $\frac{1}{\overline{X}}$ (which is 1 divided by the average of $X$) is not equal to $\overline{Y}$ (the average of all $\frac{1}{X}$ values). The second one is larger because when $X$ has smaller values, $\frac{1}{X}$ becomes very large, which pulls up the average. So taking the average first and then dividing gives a different result than dividing first and then taking the average.
 
-    To answer this,
+1.3 Let $X$ and $Y$ be exponentially distributed r.v.'s with parameter $\lambda = 2$. Set $Z := \log{X} + 5$. Plot the Quantile-Quantile plot and scatterplot of $X$ and $Y$. Plot the Quantile-Quantile plot and scatterplot of $X$ and $Z$. Explain the results. Comment on the difference of relations between the pairs of random variables. Which pair of r.v.'s is dependent and which one is similar?
 
-    1.  Explain what type of random variable is X:
+```{r}
+# Set parameters
+lambda <- 2
 
-        -   Normally distributed
+# Generate random variables
+X <- rexp(N, rate = lambda)
+Y <- rexp(N, rate = lambda)
+Z <- log(X) + 5
 
-        -   Binomially distributed
+# Q-Q Plot: X vs Y
+qqplot(X, Y,
+       main = "Q-Q Plot: X vs Y",
+       xlab = "Quantiles of X (Exponential, λ=2)",
+       ylab = "Quantiles of Y (Exponential, λ=2)",
+       pch = 19, col = "#1f77b4")
+abline(0, 1, col = "red", lwd = 2, lty = 2) # Intercept = 0, Slope = 1 (x = y)
+grid()
 
-        -   Poisson distributed
+# Scatterplot: X vs Y
+plot(X, Y,
+     main = "Scatterplot: X vs Y",
+     xlab = "X (Exponential, λ=2)",
+     ylab = "Y (Exponential, λ=2)",
+     pch = 19, col = "#2ca02c")
+grid()
 
-        -   Uniformly distributed
+# Q-Q Plot: X vs Z
+qqplot(X, Z,
+       main = "Q-Q Plot: X vs Z",
+       xlab = "Quantiles of X (Exponential, λ=2)",
+       ylab = "Quantiles of Z = log(X) + 5",
+       pch = 19, col = "#ff7f0e")
+abline(0, 1, col = "red", lwd = 2, lty = 2) # Intercept = 0, Slope = 1 (x = y)
+grid()
 
-    2.  What are the expected value and variance of X? Simulate realizations $x_1,x_2,\dots,x_{100}$ of $X$ to calculate the values of sample mean $\overline{\mathbf{X}}$ and sample variance $s^2 = \frac{\sum_{i=1}^{n}{(x_i - \overline{x})^{2}}}{n-1}$. Comment on the results;
+# Scatterplot: X vs Z
+plot(X, Z,
+     main = "Scatterplot: X vs Z",
+     xlab = "X (Exponential, λ=2)",
+     ylab = "Z = log(X) + 5",
+     pch = 19, col = "#9467bd")
+grid()
+```
 
-        ```{r}
-        # YOUR CODE HERE
-        ```
+**Comment on X vs Y:** Both $X$ and $Y$ are generated randomly and independently from the same type of distribution (exponential). The Q-Q plot shows points close to a straight line, meaning they have the same distribution shape. The scatterplot shows random scattered points with no pattern, which means $X$ and $Y$ are independent - knowing one doesn't tell you anything about the other. They are similar in distribution but unrelated.
 
-    3.  What are the expected value and variance of Y? Simulate realizations $y_1,y_2,\dots,y_{100}$ of $Y$ to calculate the values of sample mean $\overline{\mathbf{Y}}$ and sample variance $s^2 = \frac{\sum_{i=1}^{n}{(y_i - \overline{y})^{2}}}{n-1}$. Comment on the results;
+**Comment on X vs Z:** Here $Z$ is calculated directly from $X$ using the formula $Z = \log(X) + 5$, so they are completely related (dependent). The Q-Q plot doesn't follow a straight line because $Z$ has a different distribution type than $X$. The scatterplot shows a clear curved pattern - when $X$ increases, $Z$ also increases in a predictable way. This pair is dependent because $Z$ is computed from $X$.
 
-        ```{r}
-        # YOUR CODE HERE
-        ```
+**Summary:** $(X, Y)$ are independent with the same distribution type, while $(X, Z)$ are dependent with different distribution types.
 
-**Do not forget to include several sentences summarizing your work and the conclusions you have made!**
+```
+------------------------------------------------------------------------
+```
+
+**2. You toss a fair coin three times and a random variable** $X$ records how many times the coin shows Heads. You convince your friend that they should play a game with the following payoff: every round (equivalent to three coin tosses) will cost £$1$. They will receive £$0.5$ for every coin showing Heads. What is the expected value and the variance of the random variable $Y := 0.5X-1$? To answer this,
+
+2.1 Explain what type of random variable is X:
+
+-   Normally distributed
+
+-   Binomially distributed YES
+
+-   Poisson distributed
+
+-   Uniformly distributed
+
+**Explanation:** $X$ is *binomially distributed* because it counts the number of successes (Heads) in a fixed number of independent trials (3 coin tosses), where each trial has the same probability of success ($p = 0.5$). We write $X \sim \text{Binomial}(n=3, p=0.5)$.
+
+2.2 What are the expected value and variance of X? Simulate realizations $x_1,x_2,\dots,x_{100}$ of $X$ to calculate the values of sample mean $\overline{\mathbf{X}}$ and sample variance $s^2 = \frac{\sum_{i=1}^{n}{(x_i - \overline{x})^{2}}}{n-1}$. Comment on the results;
+
+```{r}
+# Set parameters
+n_tosses <- 3
+p_head <- 0.5
+N <- 100
+
+# Generate random variable
+X <- rbinom(N, size = n_tosses, prob = p_head)
+
+# Calculate values
+sample_mean_X <- mean(X)
+sample_var_X <- var(X)
+
+# Calculate theoretical values
+# E(X) = n * p
+# Var(X) = n * p * (1 - p)
+theoretical_mean_X <- n_tosses * p_head
+theoretical_var_X <- n_tosses * p_head * (1 - p_head)
+
+sample_mean_X
+sample_var_X
+theoretical_mean_X
+theoretical_var_X
+```
+
+**Comment:** The simulation confirms the theoretical results. The sample mean is close to the theoretical expected value $\mathbb{E}(X) = np = 3 \times 0.5 = 1.5$ heads, and the sample variance is close to the theoretical variance $\text{Var}(X) = np(1-p) = 3 \times 0.5 \times 0.5 = 0.75$. Small differences exist due to random sampling with only $N=100$ simulations, but they become negligible with larger sample sizes.
+
+2.3 What are the expected value and variance of Y? Simulate realizations $y_1,y_2,\dots,y_{100}$ of $Y$ to calculate the values of sample mean $\overline{\mathbf{Y}}$ and sample variance $s^2 = \frac{\sum_{i=1}^{n}{(y_i - \overline{y})^{2}}}{n-1}$. Comment on the results;
+
+```{r}
+# Generate random variable
+Y <- 0.5 * X - 1
+
+# Calculate values
+sample_mean_Y <- mean(Y)
+sample_var_Y <- var(Y)
+
+# Calculate theoretical values
+# E(aX + b) = aE(X) + b
+# Var(aX + b) = a^2Var(X)
+a <- 0.5
+b <- -1
+
+theoretical_mean_Y <- a * theoretical_mean_X + b
+theoretical_var_Y <- a^2 * theoretical_var_X
+
+sample_mean_Y
+sample_var_Y
+theoretical_mean_Y
+theoretical_var_Y
+```
+
+**Comment:** The expected value of $Y$ is $\mathbb{E}(Y) = 0.5 \times 1.5 - 1 = -0.25$ pounds, meaning on average your friend loses £$0.25$ per round. This makes the game unfavorable for them. The variance of $Y$ is $\text{Var}(Y) = (0.5)^2 \times 0.75 = 0.1875$, which is smaller than $\text{Var}(X)$ because of the scaling factor $(0.5)^2$. The simulation results match the theoretical values well, confirming that linear transformations affect expectation and variance according to the formulas $\mathbb{E}(aX + b) = a\mathbb{E}(X) + b$ and $\text{Var}(aX + b) = a^2\text{Var}(X)$.
+
+**Conclusion:** In this task, we explored key properties of random variables and their transformations. We demonstrated that expectation is not preserved under non-linear transformations like reciprocals, showing that $\mathbb{E}\left(\frac{1}{X}\right) \neq \frac{1}{\mathbb{E}(X)}$ due to Jensen's inequality. Through Q-Q plots and scatterplots, we distinguished between independent random variables ($X$ and $Y$) that share the same distribution, and dependent variables ($X$ and $Z$) with a deterministic relationship $Z = \log(X) + 5$. Finally, we analyzed a coin-tossing game using binomial distribution $X \sim \text{Binomial}(n=3, p=0.5)$, calculating expected values and variances for both the number of heads and the game payoff $Y = 0.5X - 1$. The simulations consistently matched theoretical predictions, confirming our understanding of expectation, variance, independence, and linear transformations of random variables.
 
 ------------------------------------------------------------------------
 
