@@ -80,13 +80,15 @@ $$
 3.  What choice of $N$ guarantees that $\varepsilon \le 0.03$?\
 4.  Draw the histogram of the number $k = 0,1,2,3,4$ of errors while transmitting a $4$-digit binary message. Do you think it is one of the known distributions?
 
-#### You can (but do not have to) use the chunks we prepared for you
-
 #### First, we set the **id** of the team and define the probability $p$ and the generator and parity-check matrices $G$ and $H$
 
 ```{r}
-p <- id/100
-# matrices G and H
+p <- id / 100
+N <- 100
+p_star <- (1 - p)^7 + 7 * p * (1 - p)^6
+
+
+# Matrices G and H
 G <- matrix(c(1, 1, 1, 0, 0, 0, 0,
 		1, 0, 0, 1, 1, 0, 0,
 		0, 1, 0, 1, 0, 1, 0,
@@ -94,36 +96,168 @@ G <- matrix(c(1, 1, 1, 0, 0, 0, 0,
 H <- t(matrix(c(1, 0, 1, 0, 1, 0, 1,
 		0, 1, 1, 0, 0, 1, 1,
 		0, 0, 0, 1, 1, 1, 1), nrow = 3, byrow = TRUE))
-# cat("The matrix G is: \n")
-#G
-#cat("The matrix H is: \n")
-#H
-#cat("The product GH must be zero: \n")
-#(G%*%H) %%2
+cat("The matrix G is: \n")
+G
+cat("The matrix H is: \n")
+H
+cat("The product GH must be zero: \n")
+(G%*%H) %%2
 ```
 
 #### Next, generate the messages
 
 ```{r}
-# generate N messages
-
+# Generate N messages
 message_generator <- function(N) {
-  matrix(sample(c(0,1), 4*N, replace = TRUE), nrow = N)
+  matrix(sample(c(0, 1), 4 * N, replace = TRUE), nrow = N)
 }
-messages <- message_generator(100)
+
+messages <- message_generator(N)
 codewords <- (messages %*% G) %% 2
 ```
 
 #### Generate random errors; do not forget that they occur with probability $p$! Next, generate the received messages
 
 ```{r}
-#  errors <- ...
-#  received <-
+# Generate errors
+errors <- matrix(rbinom(N * 7, size = 1, prob = p), nrow = N)
+
+# Apply errors to codewords to get received messages
+# XOR operation
+received <- (codewords + errors) %% 2
 ```
 
-The next steps include detecting the errors in the received messages, correcting them, and then decoding the obtained messages. After this, you can continue with calculating all the quantities of interest
+#### 1.Detecting and Correcting Errors
 
-**Do not forget to include several sentences summarizing your work and the conclusions you have made!**
+```{r}
+# Calculate syndrome vector
+syndrome_vector <- (received %*% H) %% 2
+
+# Function to convert syndrome (3 bits) to error position (1-7)
+decode_syndrome <- function(syndrome) {
+    syndrome[1] + 2 * syndrome[2] + 4 * syndrome[3]
+}
+
+corrected <- received
+
+for (i in 1:N) {
+    # Find which bit position has error
+    error_idx <- decode_syndrome(syndrome_vector[i, ])
+
+    # If error is in position 1-7, flip bit
+    if (error_idx > 0 && error_idx <= 7) {
+        corrected[i, error_idx] <- (corrected[i, error_idx] + 1) %% 2
+    }
+}
+
+# Extract the original 4-bit message
+decoded <- corrected[, c(3, 5, 6, 7)]
+
+# Check which messages were transmitted correctly
+success <- apply(decoded == messages, 1, all)
+
+# Estimate probability of correct transmission
+p_hat <- mean(success)
+
+p_star
+p_hat
+```
+
+**Comment on why $\hat p$ is close to $p^*$ for large $N$:** The estimate $\hat p$ is the sample mean of the success indicator, which takes value 1 when a message is transmitted correctly and 0 otherwise.
+By the **Law of Large Numbers (LLN)**, as the number of simulations $N$ increases, the sample mean $\hat p$ converges to the true probability $p^*$.
+This happens because each transmission trial is independent and has the same probability $p^*$ of success.
+In simple terms, when we repeat the experiment many times, the proportion of successes gets closer and closer to the true success probability.
+The more simulations we run, the more reliable our estimate becomes, which is why we can be confident that $\hat p \approx p^*$ when $N$ is large.
+With $N=100$, we got $\hat p = 0.27$, which is reasonably close to the theoretical $p^* = 0.309$, and the difference would decrease with larger $N$.
+
+#### 2.Confidence Interval
+```{r}
+# Calculate standard error
+standard_error <- sd(success) / sqrt(N)
+
+# For 95% confidence interval we use z = 1.96
+# This comes from the normal distribution: P(-1.96 < Z < 1.96) = 0.95
+z_score <- qnorm(0.975)  # 0.975 because we want 2.5% in each tail
+
+# Calculate margin of error
+epsilon <- z_score * standard_error
+
+# Confidence interval bounds
+ci_lower <- p_hat - epsilon
+ci_upper <- p_hat + epsilon
+
+cat("95% Confidence Interval: [", ci_lower, ",", ci_upper, "]\n")
+cat("Margin of error (ε):", epsilon, "\n")
+```
+
+**Comment:** Using the **Central Limit Theorem (CLT)**, we know that for large $N$, the distribution of $\hat p$ is approximately normal with mean $p^*$ and standard deviation $\sigma/\sqrt{N}$, where $\sigma$ is the standard deviation of the success indicator.
+We estimate $\sigma$ using the sample standard deviation.
+The confidence interval $[0.183, 0.357]$ tells us that we can be 95% confident that the true probability $p^*$ lies within this range.
+Indeed, our theoretical $p^* = 0.309$ falls within this interval, confirming our method works correctly.
+The margin of error $\varepsilon = 0.087$ decreases as $N$ increases, giving us more precise estimates with more simulations.
+
+#### 3.Required Sample Size N
+```{r}
+# For epsilon <= 0.03
+epsilon_target <- 0.03
+
+sigma_estimate <- sd(success)
+
+N_required <- ceiling((z_score * sigma_estimate / epsilon_target) ^ 2)
+
+N_required
+```
+
+**Comment:** To guarantee that the margin of error $\varepsilon \le 0.03$, we use the formula $\varepsilon = z \cdot \frac{\sigma}{\sqrt{N}}$.
+Solving for $N$, we get $N \ge \left(\frac{z \cdot \sigma}{\varepsilon}\right)^2$.
+We use our sample standard deviation as an estimate for $\sigma$ and $z = 1.96$ for 95% confidence.
+The calculation shows that we need approximately $N \approx 850$ simulations to achieve the desired precision.
+This makes sense: smaller margin of error requires more data - if we want our estimate to be more accurate (within $\pm 0.03$), we need to run more experiments.
+Note that this is just an estimate based on our initial sample of $N=100$; the actual required $N$ might vary slightly.
+
+#### 4.Histogram of Number of Errors
+```{r}
+# Count how many bits were corrupted in each message
+num_errors <- rowSums(errors)
+
+# Histogram
+hist(num_errors,
+     breaks = seq(-0.5, 7.5, by = 1),
+     main = "Distribution of Number of Errors per Message",
+     xlab = "Number of Errors (k)",
+     ylab = "Frequency",
+     col = "lightblue",
+     right = FALSE)
+
+# Bar plot
+error_counts <- table(num_errors)
+barplot(error_counts,
+        main = "Distribution of Number of Errors",
+        xlab = "Number of Errors (k)",
+        ylab = "Frequency",
+        col = "lightblue")
+```
+
+**Comment:** The histogram shows how many errors occurred in each 7-bit codeword during transmission.
+Since each of the 7 bits can be corrupted independently with probability $p = 0.31$, the number of errors follows a **Binomial distribution** with parameters $n=7$ (number of bits) and $p=0.31$ (probability each bit is corrupted).
+The expected number of errors is $7 \times 0.31 \approx 2.17$, so having 2 errors is most common, which matches what we observe in the histogram.
+
+Crucially, the Hamming $[7,4]$ code can only correct messages with **0 or 1 error**.
+It fails when **2 or more errors** occur.
+At our error rate of $p=0.31$, the probability of getting 2 or more errors is approximately $1 - p^* = 1 - 0.309 \approx 0.69$ (about 69% of messages), which explains why the overall success rate $p^* \approx 0.31$ is relatively low.
+The code works well only when bit error rates are much smaller.
+
+**Summary:** In this task, we implemented and analyzed the $[7,4]$ Hamming code, which protects 4-bit messages from corruptions by encoding them into 7-bit codewords.
+With our bit error probability of $p=0.31$ (team id=31), we found that the theoretical probability of successfully transmitting a message is $p^* = 0.309$ (about 31%).
+Our simulation with $N=100$ gave an estimate of $\hat p = 0.27$, which is close to the theoretical value and falls within our 95% confidence interval $[0.183, 0.357]$.
+
+We used the Central Limit Theorem to calculate this confidence interval with margin of error $\varepsilon = 0.087$.
+To achieve a more precise estimate with $\varepsilon \le 0.03$, we determined that approximately **850 simulations** are needed.
+
+The error distribution follows a **Binomial$(7, 0.31)$** pattern, with most codewords experiencing 2-3 bit errors.
+Since the Hamming code can only correct single-bit errors (0 or 1 error), messages with 2 or more errors—which occur in about 69% of transmissions at $p=0.31$—fail to be decoded correctly.
+This explains the relatively low success rate of approximately 31%.
+The Hamming code would be much more effective at lower bit error rates (e.g., $p < 0.1$), where single errors dominate and multiple errors are rare.
 
 ------------------------------------------------------------------------
 
@@ -261,8 +395,8 @@ X <- rnorm(N, mean = mu, sd = sigma)
 Y <- 1 / X
 
 # Calculate values
-value1 = 1 / mean(X)
-value2 = mean(Y)
+value1 <- 1 / mean(X)
+value2 <- mean(Y)
 
 value1
 value2
