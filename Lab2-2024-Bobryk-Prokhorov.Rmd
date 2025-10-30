@@ -4,6 +4,9 @@ author: "Vladyslav Bobryk, Roman Prokhorov"
 output:
   html_document:
     df_print: paged
+editor_options: 
+  markdown: 
+    wrap: sentence
 ---
 
 ## Introduction
@@ -163,7 +166,7 @@ p_star
 p_hat
 ```
 
-**Comment on why $\hat p$ is close to $p^*$ for large $N$:** The estimate $\hat p$ is the sample mean of the success indicator, which takes value 1 when a message is transmitted correctly and 0 otherwise.
+**Comment on why** $\hat p$ is close to $p^*$ for large $N$: The estimate $\hat p$ is the sample mean of the success indicator, which takes value 1 when a message is transmitted correctly and 0 otherwise.
 By the **Law of Large Numbers (LLN)**, as the number of simulations $N$ increases, the sample mean $\hat p$ converges to the true probability $p^*$.
 This happens because each transmission trial is independent and has the same probability $p^*$ of success.
 In simple terms, when we repeat the experiment many times, the proportion of successes gets closer and closer to the true success probability.
@@ -171,6 +174,7 @@ The more simulations we run, the more reliable our estimate becomes, which is wh
 With $N=100$, we got $\hat p = 0.27$, which is reasonably close to the theoretical $p^* = 0.309$, and the difference would decrease with larger $N$.
 
 #### 2.Confidence Interval
+
 ```{r}
 # Calculate standard error
 standard_error <- sd(success) / sqrt(N)
@@ -197,6 +201,7 @@ Indeed, our theoretical $p^* = 0.309$ falls within this interval, confirming our
 The margin of error $\varepsilon = 0.087$ decreases as $N$ increases, giving us more precise estimates with more simulations.
 
 #### 3.Required Sample Size N
+
 ```{r}
 # For epsilon <= 0.03
 epsilon_target <- 0.03
@@ -216,6 +221,7 @@ This makes sense: smaller margin of error requires more data - if we want our es
 Note that this is just an estimate based on our initial sample of $N=100$; the actual required $N$ might vary slightly.
 
 #### 4.Histogram of Number of Errors
+
 ```{r}
 # Count how many bits were corrupted in each message
 num_errors <- rowSums(errors)
@@ -254,7 +260,7 @@ Our simulation with $N=100$ gave an estimate of $\hat p = 0.27$, which is close 
 We used the Central Limit Theorem to calculate this confidence interval with margin of error $\varepsilon = 0.087$.
 To achieve a more precise estimate with $\varepsilon \le 0.03$, we determined that approximately **850 simulations** are needed.
 
-The error distribution follows a **Binomial$(7, 0.31)$** pattern, with most codewords experiencing 2-3 bit errors.
+The error distribution follows a **Binomial**$(7, 0.31)$ pattern, with most codewords experiencing 2-3 bit errors.
 Since the Hamming code can only correct single-bit errors (0 or 1 error), messages with 2 or more errors—which occur in about 69% of transmissions at $p=0.31$—fail to be decoded correctly.
 This explains the relatively low success rate of approximately 31%.
 The Hamming code would be much more effective at lower bit error rates (e.g., $p < 0.1$), where single errors dominate and multiple errors are rare.
@@ -263,11 +269,17 @@ The Hamming code would be much more effective at lower bit error rates (e.g., $p
 
 ### Task 2.
 
-In this task, we discuss a real-life process that is well modelled by a Poisson distribution. As you remember, a Poisson random variable describes occurrences of rare events, i.e., counts the number of successes in a large number of independent random experiments. One of the typical examples is the **radioactive decay** process.
+In this task, we discuss a real-life process that is well modelled by a Poisson distribution.
+As you remember, a Poisson random variable describes occurrences of rare events, i.e., counts the number of successes in a large number of independent random experiments.
+One of the typical examples is the **radioactive decay** process.
 
-Consider a sample of radioactive element of mass $m$, which has a big *half-life period* $T$; it is vitally important to know the probability that during a one second period, the number of nuclei decays will not exceed some critical level $k$. This probability can easily be estimated using the fact that, given the *activity* ${\lambda}$ of the element (i.e., the probability that exactly one nucleus decays in one second) and the number $N$ of atoms in the sample, the random number of decays within a second is well modelled by Poisson distribution with parameter $\mu:=N\lambda$. Next, for the sample of mass $m$, the number of atoms is $N = \frac{m}{M} N_A$, where $N_A = 6 \times 10^{23}$ is the Avogadro constant, and $M$ is the molar (atomic) mass of the element. The activity of the element, $\lambda$, is $\log(2)/T$, where $T$ is measured in seconds.
+Consider a sample of radioactive element of mass $m$, which has a big *half-life period* $T$; it is vitally important to know the probability that during a one second period, the number of nuclei decays will not exceed some critical level $k$.
+This probability can easily be estimated using the fact that, given the *activity* ${\lambda}$ of the element (i.e., the probability that exactly one nucleus decays in one second) and the number $N$ of atoms in the sample, the random number of decays within a second is well modelled by Poisson distribution with parameter $\mu:=N\lambda$.
+Next, for the sample of mass $m$, the number of atoms is $N = \frac{m}{M} N_A$, where $N_A = 6 \times 10^{23}$ is the Avogadro constant, and $M$ is the molar (atomic) mass of the element.
+The activity of the element, $\lambda$, is $\log(2)/T$, where $T$ is measured in seconds.
 
-Assume that a medical laboratory receives $n$ samples of radioactive element ${{}^{137}}\mathtt{Cs}$ (used in radiotherapy) with half-life period $T = 30.1$ years and mass $m = \mathtt{team\, id \,number} \times 10^{-6}$ g each. Denote by $X_1,X_2,\dots,X_n$ the **i.i.d. r.v.**'s counting the number of decays in sample $i$ in one second.
+Assume that a medical laboratory receives $n$ samples of radioactive element ${{}^{137}}\mathtt{Cs}$ (used in radiotherapy) with half-life period $T = 30.1$ years and mass $m = \mathtt{team\, id \,number} \times 10^{-6}$ g each.
+Denote by $X_1,X_2,\dots,X_n$ the **i.i.d. r.v.**'s counting the number of decays in sample $i$ in one second.
 
 1.  Specify the parameter of the Poisson distribution of $X_i$ (you'll need the atomic mass of *Cesium-137*)\
 2.  Show that the distribution of the sample means of $X_1,\dots,X_n$ gets very close to a normal one as $n$ becomes large and identify that normal distribution. To this end,
@@ -283,22 +295,33 @@ Assume that a medical laboratory receives $n$ samples of radioactive element ${{
     -   calculate the number of elements of the sample which are less than critical value ($8 \times 10^8$) and calculate the empirical probability; comment whether it is close to the desired level $0.95$
 
 ```{r}
-lambda <- 1  # change this!
-N <- 100     # change this!
+m <- id * 1e-6
+mol <- 137
+N_A <- 6.022e23
+T <- 30.1
+T_seconds <- T * 365.25 * 24 * 60 * 60
+lambda <- log(2) / T_seconds
+N <- (m / mol) * N_A
 mu <- N * lambda
-K <- 1e3
+K <- 2000
 n <- 5
 sample_means <- colMeans(matrix(rpois(n*K, lambda = mu), nrow=n))
+
+print(paste("Half-life in seconds (T_seconds):", T_seconds))
+print(paste("Number of atoms (N) in the sample:", N))
+print(paste("Activity (lambda):", lambda))
+print(paste("The parameter mu (μ) of the Poisson distribution is:", mu))
 ```
 
-#### Next, calculate the parameters of the standard normal approximation
+1.  Calculate the parameters of the standard normal approximation
 
 ```{r}
-mu <- 0       # change this!
-sigma <- 1    # change this!
+# If Xi ~ Pois(mu), then E[Xˉ]=mu, Var(Xˉ)= mu/n  ->  Xˉ ≈ N(mu, mu/n)
+mu <- mu
+sigma <- sqrt(mu / n)
 ```
 
-#### We can now plot ecdf and cdf
+#### Test ECDF vs CDF plot
 
 ```{r}
 xlims <- c(mu-3*sigma,mu+3*sigma)
@@ -310,11 +333,153 @@ plot(Fs,
      lwd = 2,
      main = "Comparison of ecdf and cdf")
 curve(pnorm(x, mean = mu, sd = sigma), col = "red", lwd = 2, add = TRUE)
+legend("topleft",
+       legend = c("ECDF", sprintf("N(%.3g, %.3g^2)", mu, sigma)),
+       lwd = 2, col = c("blue", "red"), bty = "n")
 ```
 
-**Next, proceed with all the remaining steps**
+#### 2. Showing that the distribution of the sample means of $X_1,\dots,X_n$ gets very close to a normal one as $n$ becomes large and identify that normal distribution
 
-**Do not forget to include several sentences summarizing your work and the conclusions you have made!**
+```{r}
+
+run_clt_simulation <- function(n, mu, K) {
+  # the theoretical normal distribution
+  mu_normal <- mu
+  sigma_normal <- mu / n
+  sd_normal <- sqrt(sigma_normal)
+
+  # plot the ECDF vs. theoretical CDF
+  xlims <- c(mu-3*sigma,mu+3*sigma)
+  sample_means <- colMeans(matrix(rpois(n*K, lambda = mu), nrow=n))
+  Fs <- ecdf(sample_means)
+  plot(Fs,
+     xlim = xlims,
+     ylim = c(0,1),
+     col = "blue",
+     lwd = 2,
+     main = "Comparison of ECDF and CDF")
+  
+  curve(pnorm(x, mean = mu_normal, sd = sd_normal), col = "red", lwd = 2, add = TRUE)
+  legend("bottomright", 
+         legend = c("Empirical CDF", "Theoretical Normal CDF"),
+         col = c("black", "red"), 
+         lty = 1, 
+         lwd = c(1, 2))
+
+  # the maximal difference (Kolmogorov-Smirnov test)
+  ks_test_result <- ks.test(sample_means, "pnorm", mean = mu_normal, sd = sd_normal)
+
+  return(ks_test_result$statistic)
+}
+```
+
+**For N = 5**
+
+```{r}
+diff_n5 <- run_clt_simulation(n = 5, mu, K)
+cat(sprintf("n = 5:  Max difference = %.6f\n", diff_n5))
+```
+
+**For N = 10**
+
+```{r}
+diff_n10 <- run_clt_simulation(n = 10, mu, K)
+cat(sprintf("n = 10: Max difference = %.6f\n", diff_n10))
+```
+
+**For N = 50**
+
+```{r}
+diff_n50 <- run_clt_simulation(n = 50, mu, K)
+cat(sprintf("n = 50: Max difference = %.6f\n", diff_n50))
+```
+
+**Comment:** Here we can see, that for larger *N*, the **ECDF** gets closer to the theoretical normal distribution, and their difference gets smaller
+
+------------------------------------------------------------------------
+
+#### 3. Calculating the largest possible value of $n$, for which the total number of decays in one second is less than $8 \times 10^8$ with probability at least $0.95$.
+
+```{r}
+# total number of decays in one second is less than 8 * 10^8
+k_crit <- 8e8
+# with probability at least 0.95
+alpha  <- 0.05 #  P(S < k) >= 0.95
+
+# S = X1 + ... + Xn ~ Poisson(n * mu)
+# need to approx P(S < k_crit) ≥ 0.95 or P(S ≥ k_crit) ≤ 0.05
+
+
+# Markov:  P(S >= k) <= E[S]/k = (n*mu)/k  <= alpha
+n_markov <- floor(alpha * k_crit / mu)
+
+# Chernoff
+# the left side of the log-transformed inequality
+chernoff_bound <- function(n, mu) {
+  S <- n * mu
+  if (S >= k_crit) {
+    return(1)
+  }
+  return(k_crit * (1 + log(S) - log(k_crit)) - S)
+}
+
+target_log_prob <- log(0.05) # bound to compare with
+# search for the largest n
+# the bound is only valid for n*mu < k_crit
+n_chernoff <- {
+  f <- function(n) chernoff_bound(n = n, mu = mu)
+  n <- 1
+  while (f(n) <= target_log_prob) n <- n * 2     # expand if still <= alpha
+  floor(uniroot(f, c(1, n))$root)
+}
+
+
+# CLT:
+# S = X1 + ... + Xn ~ Poisson(n * mu)
+# Need P(S < k) >= 0.95  <=>  (k - 0.5 - lambda)/sqrt(lambda) >= z{0.95}
+z <- qnorm(0.95)
+n_clt <- {
+  g <- function(n) (k_crit - 0.5 - n*mu)/sqrt(n*mu) - z
+  n <- 1
+  while (g(n) >= 0) n <- n * 2
+  floor(uniroot(g, c(1, n))$root)
+}
+
+cat("Largest n:\n")
+cat("  Markov  :", n_markov,  "\n")
+cat("  Chernoff:", n_chernoff, "\n")
+cat("  CLT     :", n_clt,      "\n\n")
+
+# repeat K times
+simulate_prob <- function(n, K) {
+  sums <- rpois(K, lambda = n*mu)           # K realizations of S
+  c(count = sum(sums < k_crit), prob = mean(sums < k_crit))
+}
+
+sim_markov   <- simulate_prob(n_markov,   K)
+sim_chernoff <- simulate_prob(n_chernoff, K)
+sim_clt      <- simulate_prob(n_clt,      K)
+
+cat(sprintf("Empirical P(S < %g) with K=%d:\n", k_crit, K))
+print(rbind(
+  Markov   = sim_markov,
+  Chernoff = sim_chernoff,
+  CLT      = sim_clt
+))
+```
+
+**Explanation:** Here, we can approximate $S = X_1 + ... + X_n \sim Poisson(n * mu)$.\
+**Markov**: $P(S \ge k) \le E[S]/k = (n * \mu)/k \le alpha$, where $alpha$ = $0.05$ - it provides the rough estimation
+
+**Chernoff**: we use $log(0.05)$ as the upper bound to find the largest ***N**,* and using the same $S$ approximation, find the max **N** in the range found in the `while` loop.
+
+**CLT**: using the same loop as for **Chernoff**, we normalize to $Z$ and find the formula needed.
+
+Need to mention, that in this case, **N** is very limited, because of the large $\mu$.
+Even for $N = 1$, $S = \mu$ which is $\approx 90,000,000$ already, and with that rate, $8e8 = 80,000,000$ looks not that large amount of particles.
+So, $P(S_n \ge 8e8) \ge 0.95$ holds for almost every $N$.
+
+Actually, approximation methods (especially, **Chernoff** and **CLT)** shows that $N <= 8$
 
 ------------------------------------------------------------------------
 
@@ -340,20 +505,23 @@ curve(pnorm(x, mean = mu, sd = sigma), col = "red", lwd = 2, add = TRUE)
 #### First, generate samples an sample means:
 
 ```{r}
-nu1 <- 1  # change this!
-K <- 1e3
+nu1 <- id + 10
+rate <- 1 / nu1
+clicks <- 100
+K <- 5000
 n <- 5
-sample_means <- colMeans(matrix(rexp(n*K, rate = nu1), nrow=n))
+alpha <- 0.05
+sample_means <- colMeans(matrix(rexp(n*K, rate = rate), nrow=n))
 ```
 
-#### Next, calculate the parameters of the standard normal approximation
+#### 1. Calculating the parameters of the standard normal approximation
 
 ```{r}
-mu <- 0       # change this!
-sigma <- 1    # change this!
+mu <- nu1
+sigma <- nu1 / sqrt(n)
 ```
 
-#### We can now plot ecdf and cdf
+#### Test ECDF vs CDF plot
 
 ```{r}
 xlims <- c(mu-3*sigma,mu+3*sigma)
@@ -366,9 +534,132 @@ plot(Fs,
 curve(pnorm(x, mean = mu, sd = sigma), col = "red", lwd = 2, add = TRUE)
 ```
 
-**Next, proceed with all the remaining steps**
+#### 2. Showing that the distribution of the sample means of $X_1, X_2,\dots,X_n$ gets very close to a normal one as $n$ becomes large
 
-**Do not forget to include several sentences summarizing your work and the conclusions you have made!**
+```{r}
+# maximal CDF difference within ±3σ
+max_cdf_diff <- function(Fs, mu, sigma) {
+  t <- seq(mu - 3*sigma, mu + 3*sigma, length.out = 200)
+  max(abs(Fs(t) - pnorm(t, mean = mu, sd = sigma)))
+}
+
+run_clt_simulation_for_exp <- function(n, nu1, K) {
+  # the theoretical normal distribution
+  mu_normal <- nu1
+  sigma_normal <- nu1 / sqrt(n)
+
+  # plot the ECDF vs theoretical CDF
+  xlims <- c(mu-3*sigma,mu+3*sigma)
+  sample_means <- colMeans(matrix(rexp(n*K, rate = rate), nrow=n))
+  Fs <- ecdf(sample_means)
+  plot(Fs,
+     xlim = xlims,
+     ylim = c(0,1),
+     col = "blue",
+     lwd = 2,
+     main = "Comparison of ECDF and CDF")
+  
+  curve(pnorm(x, mean = mu_normal, sd = sigma_normal), col = "red", lwd = 2, add = TRUE)
+  legend("bottomright", 
+         legend = c("Empirical CDF", "Theoretical Normal CDF"),
+         col = c("black", "red"), 
+         lty = 1, 
+         lwd = c(1, 2))
+
+  # the maximal difference (Kolmogorov distance)
+  max_cdf_diff <- max_cdf_diff(Fs, mu, sigma_normal)
+  return(max_cdf_diff)
+}
+```
+
+**For N = 5**
+
+```{r}
+diff_n5 <- run_clt_simulation_for_exp(n = 5, mu, K)
+cat(sprintf("n = 5:  Max CDF difference = %.6f\n", diff_n5))
+```
+
+**For N = 10**
+
+```{r}
+diff_n10 <- run_clt_simulation_for_exp(n = 10, mu, K)
+cat(sprintf("n = 10:  Max CDF difference = %.6f\n", diff_n10))
+```
+
+**For N = 50**
+
+```{r}
+diff_n50 <- run_clt_simulation_for_exp(n = 50, mu, K)
+cat(sprintf("n = 50:  Max CDF difference = %.6f\n", diff_n50))
+```
+
+**Comment:** Here we can see, that for larger *N*, the **ECDF** gets closer to the theoretical normal distribution, and their difference gets smaller
+
+------------------------------------------------------------------------
+
+#### 3. Determining the maximal number of radioactive samples that can be stored in that place so that, with probability $0.95$, the place is identified as safe
+
+```{r}
+# S(100) ~ Gamma(100, nu):  E[1/S] = nu / 99
+# safe = {S ≥ 60} <=> (S ≥ 60) ≥ 0.95.
+
+# Markov: P(S < t) ≤ t * nu / 99  
+# P(S < t) = P(1/S > 1/t) <= E[1/S] * t = (nu * t)/(k-1).
+# (nu * t)/(k-1) <= alpha  ->  nu <= alpha*(k-1)/t  ->  N <= nu_max/nu1
+nu_max_markov <- alpha * (clicks - 1) / 60
+N_max_markov  <- floor(nu_max_markov * nu1)     # ν = N / nu1
+
+
+# Chernoff
+c_const <- log(1/alpha) / clicks
+phi <- function(u) 1 - u - log(u)
+
+# u*
+u_star <- uniroot(function(u) phi(u) - c_const, c(1e-9, 1 - 1e-12))$root
+
+nu_max_chernoff <- (u_star * clicks) / 60                      # total rate max
+N_max_chernoff  <- floor(nu_max_chernoff / rate)      # largest N
+
+
+# CLT bound
+# S ~ N(mean = clicks/nu, sd = sqrt(clicks)/nu)
+# P(S >= 60) >= 0.95  ->  (60 - clicks/nu)/(sqrt(clicks)/nu) <= Z{0.05} = -Z{0.95}
+z <- qnorm(0.95)
+# inequality rearranges: nu <= (clicks - Z*sqrt(clicks)) / 60
+nu_max_clt <- (clicks - z * sqrt(clicks)) / 60
+N_max_clt  <- floor(nu_max_clt * nu1)           # ν = N / nu1
+
+# verifying with Gamma CDF
+nu <- N_max_clt / nu1        # total rate for this N
+p_exact  <- 1 - pgamma(60, shape = clicks, rate = nu)   # P(S >= t)
+S_sim <- colSums(matrix(rexp(clicks * K, rate = nu), nrow = clicks))
+p_sim <- mean(S_sim >= 60)
+
+list(
+  N_max_markov   = N_max_markov,
+  N_max_chernoff = N_max_chernoff,
+  N_max_clt      = N_max_clt,
+  p_exact        = p_exact,
+  p_sim          = p_sim
+)
+```
+
+**Comment**: We can approximate $S_{100} \sim Gamma(100, nu):  E[1/S] = nu / (clicks - 1)$\
+The place is considered safe if ${S ≥ 60} <=> (S ≥ 60) ≥ 0.95$ where $60$ is one minute and $S$ is the time taken for 100 clicks from the Geiger counter.
+
+**Markov:** $P(S < t) ≤ t * nu/ (clicks - 1)$ =\> $alpha * (clicks - 1) / t$
+
+**Chernoff:**
+
+-   If $u^*$ gets very close to 1, then $ν_{max⁡} \approx k/t$.
+    On average it needs about \#`clicks` in $t$ seconds
+
+-   Bigger $clicks$ gives tighter concentration → $u^*$ gets closer to 1 → a larger $ν_{max⁡}$
+
+**CLT:** we can approximate $S \sim N(mean = clicks/nu, sd = \sqrt{clicks}\div nu)$\
+Thus, $P(S \ge 60) \ge 0.95 => (60 - clicks \div nu)/(\sqrt{clicks} \div nu) <= Z\{0.05\} = -Z\{0.95\}$\
+\
+After, we simulate the realization and repeat for $K$ times.
 
 ------------------------------------------------------------------------
 
@@ -376,13 +667,17 @@ curve(pnorm(x, mean = mu, sd = sigma), col = "red", lwd = 2, add = TRUE)
 
 **This task consists of two parts:**
 
-**1.  In this part, we discuss independence of random variables and its moments: expectation and variance.**
+**1. In this part, we discuss independence of random variables and its moments: expectation and variance.**
 
-1.1 Suppose we have a random variable $X$. Explain why $\mathbb{E}(\frac{1}{X}) \neq \frac{1}{\mathbb{E(X)}}$;
+1.1 Suppose we have a random variable $X$.
+Explain why $\mathbb{E}(\frac{1}{X}) \neq \frac{1}{\mathbb{E(X)}}$;
 
-**Explanation:** The expectation operator $\mathbb{E}$ is linear, but not multiplicative for non-linear transformations. The function $f(x) = \frac{1}{x}$ is non-linear and convex (for positive $x$), so by Jensen's inequality: $\mathbb{E}(f(X)) \geq f(\mathbb{E}(X))$.
+**Explanation:** The expectation operator $\mathbb{E}$ is linear, but not multiplicative for non-linear transformations.
+The function $f(x) = \frac{1}{x}$ is non-linear and convex (for positive $x$), so by Jensen's inequality: $\mathbb{E}(f(X)) \geq f(\mathbb{E}(X))$.
 
-1.2 Let $X \sim \mathscr{N}(\mu,\sigma^2)$ with $\mu = teamidnumber$ and $\sigma^{2} = 2\times teamidnumber+7$. Simulate realizations $x_1,x_2,\dots,x_{100}$ of $X$ and $y_1,y_2,\dots,y_{100}$ of $Y := \frac{1}{X}$ to calculate the values of $\frac{1}{\overline{\textbf{X}}}$ and $\overline{\textbf{Y}}$. Comment on the received results;
+1.2 Let $X \sim \mathscr{N}(\mu,\sigma^2)$ with $\mu = teamidnumber$ and $\sigma^{2} = 2\times teamidnumber+7$.
+Simulate realizations $x_1,x_2,\dots,x_{100}$ of $X$ and $y_1,y_2,\dots,y_{100}$ of $Y := \frac{1}{X}$ to calculate the values of $\frac{1}{\overline{\textbf{X}}}$ and $\overline{\textbf{Y}}$.
+Comment on the received results;
 
 ```{r}
 # Set parameters
@@ -402,9 +697,18 @@ value1
 value2
 ```
 
-**Comment:** The simulation shows that the two values are different, confirming what we explained above. We see that $\frac{1}{\overline{X}}$ (which is 1 divided by the average of $X$) is not equal to $\overline{Y}$ (the average of all $\frac{1}{X}$ values). The second one is larger because when $X$ has smaller values, $\frac{1}{X}$ becomes very large, which pulls up the average. So taking the average first and then dividing gives a different result than dividing first and then taking the average.
+**Comment:** The simulation shows that the two values are different, confirming what we explained above.
+We see that $\frac{1}{\overline{X}}$ (which is 1 divided by the average of $X$) is not equal to $\overline{Y}$ (the average of all $\frac{1}{X}$ values).
+The second one is larger because when $X$ has smaller values, $\frac{1}{X}$ becomes very large, which pulls up the average.
+So taking the average first and then dividing gives a different result than dividing first and then taking the average.
 
-1.3 Let $X$ and $Y$ be exponentially distributed r.v.'s with parameter $\lambda = 2$. Set $Z := \log{X} + 5$. Plot the Quantile-Quantile plot and scatterplot of $X$ and $Y$. Plot the Quantile-Quantile plot and scatterplot of $X$ and $Z$. Explain the results. Comment on the difference of relations between the pairs of random variables. Which pair of r.v.'s is dependent and which one is similar?
+1.3 Let $X$ and $Y$ be exponentially distributed r.v.'s with parameter $\lambda = 2$.
+Set $Z := \log{X} + 5$.
+Plot the Quantile-Quantile plot and scatterplot of $X$ and $Y$.
+Plot the Quantile-Quantile plot and scatterplot of $X$ and $Z$.
+Explain the results.
+Comment on the difference of relations between the pairs of random variables.
+Which pair of r.v.'s is dependent and which one is similar?
 
 ```{r}
 # Set parameters
@@ -450,17 +754,27 @@ plot(X, Z,
 grid()
 ```
 
-**Comment on X vs Y:** Both $X$ and $Y$ are generated randomly and independently from the same type of distribution (exponential). The Q-Q plot shows points close to a straight line, meaning they have the same distribution shape. The scatterplot shows random scattered points with no pattern, which means $X$ and $Y$ are independent - knowing one doesn't tell you anything about the other. They are similar in distribution but unrelated.
+**Comment on X vs Y:** Both $X$ and $Y$ are generated randomly and independently from the same type of distribution (exponential).
+The Q-Q plot shows points close to a straight line, meaning they have the same distribution shape.
+The scatterplot shows random scattered points with no pattern, which means $X$ and $Y$ are independent - knowing one doesn't tell you anything about the other.
+They are similar in distribution but unrelated.
 
-**Comment on X vs Z:** Here $Z$ is calculated directly from $X$ using the formula $Z = \log(X) + 5$, so they are completely related (dependent). The Q-Q plot doesn't follow a straight line because $Z$ has a different distribution type than $X$. The scatterplot shows a clear curved pattern - when $X$ increases, $Z$ also increases in a predictable way. This pair is dependent because $Z$ is computed from $X$.
+**Comment on X vs Z:** Here $Z$ is calculated directly from $X$ using the formula $Z = \log(X) + 5$, so they are completely related (dependent).
+The Q-Q plot doesn't follow a straight line because $Z$ has a different distribution type than $X$.
+The scatterplot shows a clear curved pattern - when $X$ increases, $Z$ also increases in a predictable way.
+This pair is dependent because $Z$ is computed from $X$.
 
 **Summary:** $(X, Y)$ are independent with the same distribution type, while $(X, Z)$ are dependent with different distribution types.
 
-```
+```         
 ------------------------------------------------------------------------
 ```
 
-**2. You toss a fair coin three times and a random variable** $X$ records how many times the coin shows Heads. You convince your friend that they should play a game with the following payoff: every round (equivalent to three coin tosses) will cost £$1$. They will receive £$0.5$ for every coin showing Heads. What is the expected value and the variance of the random variable $Y := 0.5X-1$? To answer this,
+**2. You toss a fair coin three times and a random variable** $X$ records how many times the coin shows Heads.
+You convince your friend that they should play a game with the following payoff: every round (equivalent to three coin tosses) will cost £$1$.
+They will receive £$0.5$ for every coin showing Heads.
+What is the expected value and the variance of the random variable $Y := 0.5X-1$?
+To answer this,
 
 2.1 Explain what type of random variable is X:
 
@@ -472,9 +786,12 @@ grid()
 
 -   Uniformly distributed
 
-**Explanation:** $X$ is *binomially distributed* because it counts the number of successes (Heads) in a fixed number of independent trials (3 coin tosses), where each trial has the same probability of success ($p = 0.5$). We write $X \sim \text{Binomial}(n=3, p=0.5)$.
+**Explanation:** $X$ is *binomially distributed* because it counts the number of successes (Heads) in a fixed number of independent trials (3 coin tosses), where each trial has the same probability of success ($p = 0.5$).
+We write $X \sim \text{Binomial}(n=3, p=0.5)$.
 
-2.2 What are the expected value and variance of X? Simulate realizations $x_1,x_2,\dots,x_{100}$ of $X$ to calculate the values of sample mean $\overline{\mathbf{X}}$ and sample variance $s^2 = \frac{\sum_{i=1}^{n}{(x_i - \overline{x})^{2}}}{n-1}$. Comment on the results;
+2.2 What are the expected value and variance of X?
+Simulate realizations $x_1,x_2,\dots,x_{100}$ of $X$ to calculate the values of sample mean $\overline{\mathbf{X}}$ and sample variance $s^2 = \frac{\sum_{i=1}^{n}{(x_i - \overline{x})^{2}}}{n-1}$.
+Comment on the results;
 
 ```{r}
 # Set parameters
@@ -501,9 +818,13 @@ theoretical_mean_X
 theoretical_var_X
 ```
 
-**Comment:** The simulation confirms the theoretical results. The sample mean is close to the theoretical expected value $\mathbb{E}(X) = np = 3 \times 0.5 = 1.5$ heads, and the sample variance is close to the theoretical variance $\text{Var}(X) = np(1-p) = 3 \times 0.5 \times 0.5 = 0.75$. Small differences exist due to random sampling with only $N=100$ simulations, but they become negligible with larger sample sizes.
+**Comment:** The simulation confirms the theoretical results.
+The sample mean is close to the theoretical expected value $\mathbb{E}(X) = np = 3 \times 0.5 = 1.5$ heads, and the sample variance is close to the theoretical variance $\text{Var}(X) = np(1-p) = 3 \times 0.5 \times 0.5 = 0.75$.
+Small differences exist due to random sampling with only $N=100$ simulations, but they become negligible with larger sample sizes.
 
-2.3 What are the expected value and variance of Y? Simulate realizations $y_1,y_2,\dots,y_{100}$ of $Y$ to calculate the values of sample mean $\overline{\mathbf{Y}}$ and sample variance $s^2 = \frac{\sum_{i=1}^{n}{(y_i - \overline{y})^{2}}}{n-1}$. Comment on the results;
+2.3 What are the expected value and variance of Y?
+Simulate realizations $y_1,y_2,\dots,y_{100}$ of $Y$ to calculate the values of sample mean $\overline{\mathbf{Y}}$ and sample variance $s^2 = \frac{\sum_{i=1}^{n}{(y_i - \overline{y})^{2}}}{n-1}$.
+Comment on the results;
 
 ```{r}
 # Generate random variable
@@ -528,9 +849,16 @@ theoretical_mean_Y
 theoretical_var_Y
 ```
 
-**Comment:** The expected value of $Y$ is $\mathbb{E}(Y) = 0.5 \times 1.5 - 1 = -0.25$ pounds, meaning on average your friend loses £$0.25$ per round. This makes the game unfavorable for them. The variance of $Y$ is $\text{Var}(Y) = (0.5)^2 \times 0.75 = 0.1875$, which is smaller than $\text{Var}(X)$ because of the scaling factor $(0.5)^2$. The simulation results match the theoretical values well, confirming that linear transformations affect expectation and variance according to the formulas $\mathbb{E}(aX + b) = a\mathbb{E}(X) + b$ and $\text{Var}(aX + b) = a^2\text{Var}(X)$.
+**Comment:** The expected value of $Y$ is $\mathbb{E}(Y) = 0.5 \times 1.5 - 1 = -0.25$ pounds, meaning on average your friend loses £$0.25$ per round.
+This makes the game unfavorable for them.
+The variance of $Y$ is $\text{Var}(Y) = (0.5)^2 \times 0.75 = 0.1875$, which is smaller than $\text{Var}(X)$ because of the scaling factor $(0.5)^2$.
+The simulation results match the theoretical values well, confirming that linear transformations affect expectation and variance according to the formulas $\mathbb{E}(aX + b) = a\mathbb{E}(X) + b$ and $\text{Var}(aX + b) = a^2\text{Var}(X)$.
 
-**Conclusion:** In this task, we explored key properties of random variables and their transformations. We demonstrated that expectation is not preserved under non-linear transformations like reciprocals, showing that $\mathbb{E}\left(\frac{1}{X}\right) \neq \frac{1}{\mathbb{E}(X)}$ due to Jensen's inequality. Through Q-Q plots and scatterplots, we distinguished between independent random variables ($X$ and $Y$) that share the same distribution, and dependent variables ($X$ and $Z$) with a deterministic relationship $Z = \log(X) + 5$. Finally, we analyzed a coin-tossing game using binomial distribution $X \sim \text{Binomial}(n=3, p=0.5)$, calculating expected values and variances for both the number of heads and the game payoff $Y = 0.5X - 1$. The simulations consistently matched theoretical predictions, confirming our understanding of expectation, variance, independence, and linear transformations of random variables.
+**Conclusion:** In this task, we explored key properties of random variables and their transformations.
+We demonstrated that expectation is not preserved under non-linear transformations like reciprocals, showing that $\mathbb{E}\left(\frac{1}{X}\right) \neq \frac{1}{\mathbb{E}(X)}$ due to Jensen's inequality.
+Through Q-Q plots and scatterplots, we distinguished between independent random variables ($X$ and $Y$) that share the same distribution, and dependent variables ($X$ and $Z$) with a deterministic relationship $Z = \log(X) + 5$.
+Finally, we analyzed a coin-tossing game using binomial distribution $X \sim \text{Binomial}(n=3, p=0.5)$, calculating expected values and variances for both the number of heads and the game payoff $Y = 0.5X - 1$.
+The simulations consistently matched theoretical predictions, confirming our understanding of expectation, variance, independence, and linear transformations of random variables.
 
 ------------------------------------------------------------------------
 
