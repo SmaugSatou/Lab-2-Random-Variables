@@ -4,8 +4,8 @@ author: "Vladyslav Bobryk, Roman Prokhorov"
 output:
   html_document:
     df_print: paged
-editor_options: 
-  markdown: 
+editor_options:
+  markdown:
     wrap: sentence
 ---
 
@@ -358,12 +358,12 @@ run_clt_simulation <- function(n, mu, K) {
      col = "blue",
      lwd = 2,
      main = "Comparison of ECDF and CDF")
-  
+
   curve(pnorm(x, mean = mu_normal, sd = sd_normal), col = "red", lwd = 2, add = TRUE)
-  legend("bottomright", 
+  legend("bottomright",
          legend = c("Empirical CDF", "Theoretical Normal CDF"),
-         col = c("black", "red"), 
-         lty = 1, 
+         col = c("black", "red"),
+         lty = 1,
          lwd = c(1, 2))
 
   # the maximal difference (Kolmogorov-Smirnov test)
@@ -558,12 +558,12 @@ run_clt_simulation_for_exp <- function(n, nu1, K) {
      col = "blue",
      lwd = 2,
      main = "Comparison of ECDF and CDF")
-  
+
   curve(pnorm(x, mean = mu_normal, sd = sigma_normal), col = "red", lwd = 2, add = TRUE)
-  legend("bottomright", 
+  legend("bottomright",
          legend = c("Empirical CDF", "Theoretical Normal CDF"),
-         col = c("black", "red"), 
-         lty = 1, 
+         col = c("black", "red"),
+         lty = 1,
          lwd = c(1, 2))
 
   # the maximal difference (Kolmogorov distance)
@@ -603,7 +603,7 @@ cat(sprintf("n = 50:  Max CDF difference = %.6f\n", diff_n50))
 # S(100) ~ Gamma(100, nu):  E[1/S] = nu / 99
 # safe = {S ≥ 60} <=> (S ≥ 60) ≥ 0.95.
 
-# Markov: P(S < t) ≤ t * nu / 99  
+# Markov: P(S < t) ≤ t * nu / 99
 # P(S < t) = P(1/S > 1/t) <= E[1/S] * t = (nu * t)/(k-1).
 # (nu * t)/(k-1) <= alpha  ->  nu <= alpha*(k-1)/t  ->  N <= nu_max/nu1
 nu_max_markov <- alpha * (clicks - 1) / 60
@@ -766,7 +766,7 @@ This pair is dependent because $Z$ is computed from $X$.
 
 **Summary:** $(X, Y)$ are independent with the same distribution type, while $(X, Z)$ are dependent with different distribution types.
 
-```         
+```
 ------------------------------------------------------------------------
 ```
 
@@ -864,4 +864,60 @@ The simulations consistently matched theoretical predictions, confirming our und
 
 ### General summary and conclusions
 
-Summarize here what you've done, whether you solved the tasks, what difficulties you had etc.
+This laboratory work demonstrated the application of fundamental limit theorems and probability bounds through simulation and statistical analysis.
+
+**Law of Large Numbers:**
+The Law of Large Numbers states that the sample mean of i.i.d. random variables converges to the population mean as sample size increases.
+This convergence was verified in Task 1, where the empirical success probability $\hat{p}$ approached the theoretical value $p^* = 0.309$
+as $N$ increased from 100 to the calculated requirement of approximately 850 simulations for $\varepsilon \le 0.03$.
+
+**Central Limit Theorem:**
+The Central Limit Theorem states that for i.i.d. random variables $X_1, \dots, X_n$ with mean $\mu$ and variance $\sigma^2$,
+the normalized sum $\frac{\sum_{i=1}^n X_i - n\mu}{\sigma\sqrt{n}}$ converges in distribution to $\mathscr{N}(0,1)$.
+Equivalently, the sample mean $\bar{X}_n$ converges to $\mathscr{N}(\mu, \sigma^2/n)$.
+We verified this convergence for both discrete (Poisson) and continuous (exponential) distributions in Tasks 2 and 3.
+The Kolmogorov-Smirnov distance between empirical and theoretical normal CDFs decreased systematically as $n$ increased from 5 to 50, confirming the asymptotic normality.
+For Poisson($\mu$), sample means converged to $\mathscr{N}(\mu, \mu/n)$.
+For Exponential($1/\nu_1$), sample means converged to $\mathscr{N}(\nu_1, \nu_1^2/n)$.
+
+The CLT was also applied to construct confidence intervals.
+For a 95% confidence level, the interval $[\hat{p} - 1.96\cdot\text{SE}, \hat{p} + 1.96\cdot\text{SE}]$ successfully
+contained the theoretical value $p^* = 0.309$ in Task 1,validating the approximation quality.
+
+**Probability Bounds:**
+Three concentration inequalities were compared for bounding tail probabilities:
+
+1. **Markov Inequality:** For non-negative random variable $X$ and $a > 0$, $P(X \ge a) \le \mathbb{E}[X]/a$.
+This provides the weakest bound but requires only the first moment.
+
+2. **Chernoff Bound:** For Poisson random variable with parameter $\lambda$, $P(X \ge k) \le e^{k(1+\log(\lambda/k)) - \lambda}$ when $\lambda < k$.
+This exponential bound is tighter than Markov but requires knowledge of the moment generating function.
+
+3. **CLT Approximation:** Using normal approximation with continuity correction provides the tightest bound when $n$ is sufficiently large.
+For Tasks 2 and 3, CLT-based bounds were substantially tighter than Markov bounds, with Chernoff providing intermediate values.
+
+The comparison revealed that bound tightness trades off with computational complexity and required distributional information.
+
+**Properties of Expectation and Variance:**
+We verified fundamental properties of expectation and variance:
+
+ - Linearity of expectation: $\mathbb{E}[aX + b] = a\mathbb{E}[X] + b$
+
+ - Variance under linear transformation: $\text{Var}(aX + b) = a^2\text{Var}(X)$
+
+ - Non-linearity under general transformations: $\mathbb{E}[g(X)] \neq g(\mathbb{E}[X])$ for non-linear $g$
+
+Jensen's inequality states that for convex function $g$, $\mathbb{E}[g(X)] \ge g(\mathbb{E}[X])$.
+This was demonstrated empirically in Task 4 with $g(x) = 1/x$, where $\mathbb{E}[1/X] > 1/\mathbb{E}[X]$.
+
+**Independence and Dependence:**
+Independence of random variables $X$ and $Y$ requires $P(X = A, Y = B) = P(X = A)P(Y = B)$ for all measurable sets $A, B$.
+For continuous variables, this is verified through Q-Q plots and scatterplots.
+Task 4 demonstrated the distinction between independent identically distributed variables (Q-Q plot follows diagonal, scatterplot shows no pattern)
+and functionally dependent variables (deterministic relationship visible in scatterplot).
+
+**Statistical Results:**
+All simulations produced results consistent with theoretical predictions within sampling variability.
+Error distributions matched expected forms: Binomial(7, 0.31) for bit errors, Poisson($n\mu$) for radioactive decay sums, and Gamma(100, $\nu$) for exponential sums.
+Empirical probabilities from simulations with $K = 2000$ or $K = 5000$ replications closely approximated theoretical values,
+validating both the theoretical models and simulation methodology.
